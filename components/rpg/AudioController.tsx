@@ -2,6 +2,12 @@
 
 import { useEffect, useRef } from 'react';
 
+declare global {
+  interface Window {
+    __playTebaMusic?: () => void;
+  }
+}
+
 interface AudioControllerProps {
   enabled: boolean;
   src: string;
@@ -22,6 +28,21 @@ export default function AudioController({ enabled, src, volume = 0.18 }: AudioCo
       audioRef.current = null;
     };
   }, [src, volume]);
+
+  useEffect(() => {
+    window.__playTebaMusic = () => {
+      const audio = audioRef.current;
+      if (!audio || !enabled) {
+        return;
+      }
+
+      audio.play().catch(() => undefined);
+    };
+
+    return () => {
+      delete window.__playTebaMusic;
+    };
+  }, [enabled]);
 
   useEffect(() => {
     const audio = audioRef.current;

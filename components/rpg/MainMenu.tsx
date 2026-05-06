@@ -10,6 +10,10 @@ interface MainMenuProps {
   onSettings: () => void;
 }
 
+function startMusicFromGesture() {
+  window.__playTebaMusic?.();
+}
+
 export default function MainMenu({ hasSave, onNewGame, onContinue, onSettings }: MainMenuProps) {
   const actions = [
     { label: 'Nueva partida', action: onNewGame, disabled: false },
@@ -18,7 +22,7 @@ export default function MainMenu({ hasSave, onNewGame, onContinue, onSettings }:
   ];
 
   return (
-    <main className="app-screen title-screen">
+    <main className="app-screen title-screen" onPointerDown={startMusicFromGesture}>
       <div className="title-backdrop">
         <img
           src="/images/castillo-fondo.png"
@@ -38,16 +42,10 @@ export default function MainMenu({ hasSave, onNewGame, onContinue, onSettings }:
         className="relative z-10 flex h-full flex-col items-center justify-between px-5 pb-7 pt-16 text-center"
       >
         <header className="title-logo">
-          <p className="font-pixel text-[0.58rem] uppercase tracking-[0.42em] text-white/80">
-            El mapa de la estrella
-          </p>
           <h1 className="title-teba" aria-label="Teba">
             TEBA
           </h1>
           <div className="title-rule" />
-          <p className="mt-3 text-sm font-bold uppercase tracking-[0.26em] text-white/82">
-            Douglas Heart Traveler
-          </p>
         </header>
 
         <div className="title-menu" role="menu" aria-label="Menu principal">

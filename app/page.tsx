@@ -62,6 +62,8 @@ export default function Home() {
   const showGameChrome = hasSavedGame(progress) && !['menu', 'character', 'prologue'].includes(screen);
 
   const playEffect = useCallback(() => {
+    window.__playTebaMusic?.();
+
     if (!progress.effectsEnabled || typeof window === 'undefined') {
       return;
     }
