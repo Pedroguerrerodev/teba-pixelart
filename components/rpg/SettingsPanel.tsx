@@ -1,8 +1,7 @@
 'use client';
 
-import { RotateCcw, Volume2, VolumeX, WandSparkles } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Volume2, VolumeX, WandSparkles } from 'lucide-react';
 import { RpgProgress } from '@/lib/types';
-import PixelPanel from './PixelPanel';
 
 interface SettingsPanelProps {
   progress: RpgProgress;
@@ -10,6 +9,7 @@ interface SettingsPanelProps {
   onToggleEffects: () => void;
   onToggleReducedMotion: () => void;
   onReset: () => void;
+  onBack: () => void;
 }
 
 export default function SettingsPanel({
@@ -18,48 +18,80 @@ export default function SettingsPanel({
   onToggleEffects,
   onToggleReducedMotion,
   onReset,
+  onBack,
 }: SettingsPanelProps) {
+  const rows = [
+    {
+      label: 'Musica ambiente',
+      value: progress.musicEnabled ? 'ON' : 'OFF',
+      action: onToggleMusic,
+      icon: progress.musicEnabled ? Volume2 : VolumeX,
+    },
+    {
+      label: 'Efectos de interfaz',
+      value: progress.effectsEnabled ? 'ON' : 'OFF',
+      action: onToggleEffects,
+      icon: WandSparkles,
+    },
+    {
+      label: 'Movimiento reducido',
+      value: progress.reducedMotion ? 'ON' : 'OFF',
+      action: onToggleReducedMotion,
+      icon: WandSparkles,
+    },
+    {
+      label: 'Reiniciar progreso',
+      value: 'RESET',
+      action: onReset,
+      icon: RotateCcw,
+      danger: true,
+    },
+  ];
+
   return (
-    <main className="app-screen overflow-y-auto px-4 pb-28 pt-32">
-      <header className="mb-4">
-        <p className="font-pixel text-[0.55rem] uppercase tracking-[0.22em] text-amber-200/80">
-          Sistema
-        </p>
-        <h1 className="mt-3 font-pixel text-xl text-white">Ajustes</h1>
-      </header>
+    <main className="app-screen title-screen" onPointerDown={() => window.__playTebaMusic?.()}>
+      <div className="title-backdrop">
+        <img
+          src="/images/castillo-fondo.png"
+          alt=""
+          className="title-backdrop-image"
+          onError={(event) => {
+            event.currentTarget.src = '/images/douglasday.png';
+          }}
+        />
+        <div className="absolute inset-0 title-vignette" />
+      </div>
 
-      <div className="grid gap-3">
-        <PixelPanel className="p-4">
-          <button onClick={onToggleMusic} className="settings-row">
-            {progress.musicEnabled ? <Volume2 size={20} aria-hidden /> : <VolumeX size={20} aria-hidden />}
-            <span>Musica ambiente</span>
-            <strong>{progress.musicEnabled ? 'ON' : 'OFF'}</strong>
-          </button>
-        </PixelPanel>
+      <div className="relative z-10 flex h-full flex-col items-center justify-between px-5 pb-7 pt-12 text-center">
+        <button onClick={onBack} className="title-back-button" aria-label="Volver al inicio">
+          <ArrowLeft size={19} aria-hidden />
+          <span>Inicio</span>
+        </button>
 
-        <PixelPanel className="p-4">
-          <button onClick={onToggleEffects} className="settings-row">
-            <WandSparkles size={20} aria-hidden />
-            <span>Efectos de interfaz</span>
-            <strong>{progress.effectsEnabled ? 'ON' : 'OFF'}</strong>
-          </button>
-        </PixelPanel>
+        <header className="title-logo mt-12">
+          <h1 className="title-settings-heading">Ajustes</h1>
+          <p className="title-subtitle">sistema</p>
+          <div className="title-rule" />
+        </header>
 
-        <PixelPanel className="p-4">
-          <button onClick={onToggleReducedMotion} className="settings-row">
-            <WandSparkles size={20} aria-hidden />
-            <span>Movimiento reducido</span>
-            <strong>{progress.reducedMotion ? 'ON' : 'OFF'}</strong>
-          </button>
-        </PixelPanel>
+        <div className="title-settings-menu" role="menu" aria-label="Ajustes">
+          {rows.map(({ label, value, action, icon: Icon, danger }) => (
+            <button
+              key={label}
+              onClick={action}
+              className={`title-settings-item ${danger ? 'title-settings-item-danger' : ''}`}
+              role="menuitem"
+            >
+              <Icon size={20} aria-hidden />
+              <span>{label}</span>
+              <strong>{value}</strong>
+            </button>
+          ))}
+        </div>
 
-        <PixelPanel className="p-4" accent="#e76f51">
-          <button onClick={onReset} className="settings-row text-red-100">
-            <RotateCcw size={20} aria-hidden />
-            <span>Reiniciar progreso</span>
-            <strong>RESET</strong>
-          </button>
-        </PixelPanel>
+        <footer className="font-pixel text-[0.48rem] uppercase tracking-[0.2em] text-white/72">
+          Teba - Malaga
+        </footer>
       </div>
     </main>
   );

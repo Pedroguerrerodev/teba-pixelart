@@ -1,7 +1,8 @@
 'use client';
 
 import * as Icons from 'lucide-react';
-import { LockKeyhole } from 'lucide-react';
+import { BookOpen, LockKeyhole } from 'lucide-react';
+import { historianArchiveEntries } from '@/lib/historian-campaign';
 import { CollectionItem, RpgProgress } from '@/lib/types';
 import PixelPanel from './PixelPanel';
 
@@ -17,6 +18,49 @@ function ItemIcon({ name }: { name: string }) {
 }
 
 export default function CollectionView({ items, progress, onEquipItem }: CollectionViewProps) {
+  if (progress.selectedCharacterId === 'arqueologo') {
+    return (
+      <main className="app-screen overflow-y-auto px-4 pb-28 pt-32">
+        <header className="mb-4">
+          <p className="font-pixel text-[0.55rem] uppercase tracking-[0.22em] text-amber-200/80">
+            Archivo
+          </p>
+          <h1 className="mt-3 font-pixel text-xl text-white">Enciclopedia de Teba</h1>
+          <p className="mt-3 text-sm leading-6 text-stone-200/78">
+            Lugares, piezas, epocas y personajes desbloqueados durante la campana historica.
+          </p>
+        </header>
+
+        <div className="grid gap-3">
+          {historianArchiveEntries.map((entry) => {
+            const unlocked = progress.historianCampaign.archiveEntryIds.includes(entry.id);
+
+            return (
+              <PixelPanel key={entry.id} className={`p-4 ${unlocked ? '' : 'opacity-55'}`} accent="#d6a15f">
+                <div className="flex gap-3">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center border-2 border-black bg-amber-300 text-black shadow-[3px_3px_0_#000]">
+                    {unlocked ? <BookOpen size={20} aria-hidden /> : <LockKeyhole size={20} aria-hidden />}
+                  </span>
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-200/75">
+                      {entry.category}
+                    </p>
+                    <h2 className="mt-2 font-pixel text-[0.68rem] leading-5 text-white">
+                      {unlocked ? entry.title : 'Entrada bloqueada'}
+                    </h2>
+                    <p className="mt-2 text-sm leading-6 text-stone-200/78">
+                      {unlocked ? entry.summary : 'Completa etapas de la campana historica para abrir esta ficha.'}
+                    </p>
+                  </div>
+                </div>
+              </PixelPanel>
+            );
+          })}
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="app-screen overflow-y-auto px-4 pb-28 pt-32">
       <header className="mb-4">

@@ -1,7 +1,6 @@
 'use client';
 
 import { Backpack, Star } from 'lucide-react';
-import XpBar from '@/components/ui/8bit/xp-bar';
 import { getPlayerLevel, getTotalXp } from '@/lib/rpg-progress';
 import { CollectionItem, RpgCharacter, RpgProgress, RpgZone } from '@/lib/types';
 
@@ -15,9 +14,6 @@ interface RpgHudProps {
 export default function RpgHud({ character, progress, zones, items }: RpgHudProps) {
   const xp = getTotalXp(progress, zones);
   const level = getPlayerLevel(xp);
-  const levelFloor = level === 1 ? 0 : (level - 1) * 40;
-  const nextFloor = level * 40;
-  const levelProgress = Math.min(100, Math.max(0, ((xp - levelFloor) / (nextFloor - levelFloor)) * 100));
   const equipped = items.find((item) => item.id === progress.equippedItemId);
 
   return (
@@ -30,7 +26,9 @@ export default function RpgHud({ character, progress, zones, items }: RpgHudProp
           <p className="font-pixel text-[0.5rem] uppercase tracking-[0.16em] text-amber-200/85">
             {character?.name ?? 'Explorador'}
           </p>
-          <XpBar className="mt-2" value={levelProgress} variant="retro" levelUpMessage="NIVEL +" />
+          <p className="mt-2 text-xs font-bold uppercase tracking-[0.14em] text-stone-200/70">
+            Nivel {level}
+          </p>
         </div>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2 text-xs font-bold uppercase tracking-[0.12em] text-stone-200/75">

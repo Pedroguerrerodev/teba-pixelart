@@ -6,6 +6,9 @@ import AudioController from '@/components/rpg/AudioController';
 import BottomNav from '@/components/rpg/BottomNav';
 import CharacterSelect from '@/components/rpg/CharacterSelect';
 import CollectionView from '@/components/rpg/CollectionView';
+import GuideProfile from '@/components/rpg/GuideProfile';
+import HistorianCampaignMap from '@/components/rpg/HistorianCampaignMap';
+import HistorianStageView from '@/components/rpg/HistorianStageView';
 import MainMenu from '@/components/rpg/MainMenu';
 import Prologue from '@/components/rpg/Prologue';
 import QuestLog from '@/components/rpg/QuestLog';
@@ -14,6 +17,11 @@ import SettingsPanel from '@/components/rpg/SettingsPanel';
 import WorldMap from '@/components/rpg/WorldMap';
 import ZoneView from '@/components/rpg/ZoneView';
 import { characters, collectionItems, zones } from '@/lib/rpg-data';
+import {
+  completeHistorianStage,
+  getHistorianStage,
+  visitHistorianStage,
+} from '@/lib/historian-campaign';
 import {
   completeMission,
   createDefaultRpgProgress,
@@ -40,6 +48,7 @@ export default function Home() {
   const [screen, setScreen] = useState<AppScreen>('menu');
   const [progress, setProgress] = useState<RpgProgress>(() => createDefaultRpgProgress());
   const [activeZoneId, setActiveZoneId] = useState<string | null>(null);
+  const [activeHistorianStageId, setActiveHistorianStageId] = useState<string | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
@@ -59,7 +68,21 @@ export default function Home() {
     () => characters.find((character) => character.id === progress.selectedCharacterId),
     [progress.selectedCharacterId]
   );
-  const showGameChrome = hasSavedGame(progress) && !['menu', 'character', 'prologue'].includes(screen);
+  const activeHistorianStage = useMemo(
+    () => (activeHistorianStageId ? getHistorianStage(activeHistorianStageId) : undefined),
+    [activeHistorianStageId]
+  );
+  const showGameChrome =
+    hasSavedGame(progress) &&
+    !(
+      ['menu', 'settings', 'character', 'prologue', 'guide', 'historian-campaign', 'historian-stage'].includes(screen) ||
+      (screen === 'map' && selectedCharacter?.id === 'arqueologo')
+    );
+  const showGameNav = hasSavedGame(progress) && !['menu', 'settings', 'character', 'prologue'].includes(screen);
+  const musicSrc =
+    ['menu', 'settings'].includes(screen) || selectedCharacter?.id !== 'arqueologo'
+      ? '/sound/musica-inicio.mp3'
+      : '/sound/bso-bd3.mp3';
 
   const playEffect = useCallback(() => {
     window.__playTebaMusic?.();
@@ -166,15 +189,34 @@ export default function Home() {
     playEffect();
     setProgress(resetRpgProgress());
     setActiveZoneId(null);
+    setActiveHistorianStageId(null);
     setScreen('menu');
   }, [playEffect]);
+
+  const openHistorianStage = useCallback(
+    (stageId: string) => {
+      playEffect();
+      setActiveHistorianStageId(stageId);
+      setProgress((current) => visitHistorianStage(current, stageId));
+      setScreen('historian-stage');
+    },
+    [playEffect]
+  );
+
+  const finishHistorianStage = useCallback(
+    (stageId: string) => {
+      playEffect();
+      setProgress((current) => completeHistorianStage(current, stageId));
+    },
+    [playEffect]
+  );
 
   return (
     <div className="rpg-app">
       <AudioController
         enabled={progress.musicEnabled}
-        src={screen === 'menu' ? '/sound/musica-inicio.mp3' : '/sound/bso.mp3'}
-        volume={screen === 'menu' ? 0.28 : 0.18}
+        src={musicSrc}
+        volume={['menu', 'settings'].includes(screen) ? 0.28 : 0.18}
       />
 
       <AnimatePresence mode="wait">
@@ -208,7 +250,12 @@ export default function Home() {
             <Prologue character={selectedCharacter} onEnterMap={() => navigate('map')} />
           )}
 
-          {screen === 'map' && <WorldMap zones={zones} progress={progress} onOpenZone={openZone} />}
+          {screen === 'map' &&
+            (selectedCharacter?.id === 'arqueologo' ? (
+              <HistorianCampaignMap progress={progress} onOpenStage={openHistorianStage} />
+            ) : (
+              <WorldMap zones={zones} progress={progress} onOpenZone={openZone} />
+            ))}
 
           {screen === 'zone' && (
             <ZoneView
@@ -226,6 +273,29 @@ export default function Home() {
             <CollectionView items={collectionItems} progress={progress} onEquipItem={handleEquipItem} />
           )}
 
+          {screen === 'guide' && (
+            <GuideProfile
+              character={selectedCharacter}
+              progress={progress}
+              zones={zones}
+              items={collectionItems}
+              onOpenHistorianCampaign={() => navigate('historian-campaign')}
+            />
+          )}
+
+          {screen === 'historian-campaign' && (
+            <HistorianCampaignMap progress={progress} onOpenStage={openHistorianStage} />
+          )}
+
+          {screen === 'historian-stage' && activeHistorianStage && (
+            <HistorianStageView
+              stage={activeHistorianStage}
+              progress={progress}
+              onBack={() => navigate('historian-campaign')}
+              onComplete={finishHistorianStage}
+            />
+          )}
+
           {screen === 'settings' && (
             <SettingsPanel
               progress={progress}
@@ -233,6 +303,7 @@ export default function Home() {
               onToggleEffects={() => setProgress((current) => toggleEffects(current))}
               onToggleReducedMotion={() => setProgress((current) => toggleReducedMotion(current))}
               onReset={resetProgress}
+              onBack={() => navigate('menu')}
             />
           )}
         </motion.div>
@@ -247,7 +318,7 @@ export default function Home() {
         />
       )}
 
-      {showGameChrome && (
+      {showGameNav && (
         <BottomNav current={screen} onNavigate={navigate} />
       )}
     </div>

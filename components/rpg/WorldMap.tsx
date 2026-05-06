@@ -25,7 +25,7 @@ export default function WorldMap({ zones, progress, onOpenZone }: WorldMapProps)
     <main className="app-screen pb-24">
       <div className="map-stage">
         <img
-          src="/images/mapa-teba.png"
+          src="/images/tajotorrox-vetical.png"
           alt=""
           className="absolute inset-0 h-full w-full object-cover opacity-80"
           onError={(event) => {

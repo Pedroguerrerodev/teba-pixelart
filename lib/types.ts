@@ -6,6 +6,9 @@ export type AppScreen =
   | 'zone'
   | 'quests'
   | 'collection'
+  | 'guide'
+  | 'historian-campaign'
+  | 'historian-stage'
   | 'settings';
 
 export type CharacterId = 'arqueologo' | 'senderista' | 'quesero';
@@ -92,6 +95,11 @@ export interface RpgProgress {
   completedMissionIds: string[];
   solvedPuzzleIds: string[];
   collectionItemIds: string[];
+  historianCampaign: {
+    visitedStageIds: string[];
+    completedStageIds: string[];
+    archiveEntryIds: string[];
+  };
   equippedItemId: string | null;
   musicEnabled: boolean;
   effectsEnabled: boolean;

@@ -1,6 +1,6 @@
 'use client';
 
-import { Compass, Gem, Map, ScrollText, Settings } from 'lucide-react';
+import { Compass, Gem, Map, ScrollText } from 'lucide-react';
 import { AppScreen } from '@/lib/types';
 
 interface BottomNavProps {
@@ -13,7 +13,7 @@ export default function BottomNav({ current, onNavigate }: BottomNavProps) {
     { screen: 'map' as const, label: 'Mapa', icon: Map },
     { screen: 'quests' as const, label: 'Misiones', icon: ScrollText },
     { screen: 'collection' as const, label: 'Diario', icon: Gem },
-    { screen: 'settings' as const, label: 'Ajustes', icon: Settings },
+    { screen: 'guide' as const, label: 'Guia', icon: Compass },
   ];
 
   return (
@@ -33,10 +33,6 @@ export default function BottomNav({ current, onNavigate }: BottomNavProps) {
           </button>
         );
       })}
-      <button type="button" onClick={() => onNavigate('character')} className="bottom-nav-item">
-        <Compass size={19} aria-hidden />
-        <span>Guia</span>
-      </button>
     </nav>
   );
 }

@@ -15,6 +15,11 @@ export function createDefaultRpgProgress(): RpgProgress {
     completedMissionIds: [],
     solvedPuzzleIds: [],
     collectionItemIds: [],
+    historianCampaign: {
+      visitedStageIds: [],
+      completedStageIds: [],
+      archiveEntryIds: [],
+    },
     equippedItemId: null,
     musicEnabled: true,
     effectsEnabled: true,
