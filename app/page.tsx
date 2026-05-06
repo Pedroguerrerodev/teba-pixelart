@@ -137,7 +137,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           exit={progress.reducedMotion ? { opacity: 0 } : { opacity: 0, y: -18 }}
           transition={{ duration: 0.22 }}
-          className="h-full"
+          className="app-route"
         >
           {screen === 'menu' && (
             <MainMenu
