@@ -98,6 +98,8 @@ button {
 }
 
 .app-screen.overflow-y-auto {
+  overflow-x: hidden;
+  overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
