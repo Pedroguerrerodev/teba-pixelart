@@ -1,4 +1,4 @@
-import { CharacterId, RpgProgress } from './types';
+import { CharacterId, RpgProgress, RpgZone } from './types';
 
 const STORAGE_KEY = 'explora-teba-rpg-progress';
 
@@ -13,7 +13,9 @@ export function createDefaultRpgProgress(): RpgProgress {
     selectedCharacterId: null,
     visitedZoneIds: [],
     completedMissionIds: [],
+    solvedPuzzleIds: [],
     collectionItemIds: [],
+    equippedItemId: null,
     musicEnabled: true,
     effectsEnabled: true,
     reducedMotion: false,
@@ -49,6 +51,33 @@ export function completeMission(
     collectionItemIds: rewardItemId
       ? unique(progress.collectionItemIds, rewardItemId)
       : progress.collectionItemIds,
+    updatedAt: Date.now(),
+  };
+}
+
+export function solvePuzzle(
+  progress: RpgProgress,
+  puzzleId: string,
+  rewardItemId?: string
+): RpgProgress {
+  return {
+    ...progress,
+    solvedPuzzleIds: unique(progress.solvedPuzzleIds, puzzleId),
+    collectionItemIds: rewardItemId
+      ? unique(progress.collectionItemIds, rewardItemId)
+      : progress.collectionItemIds,
+    updatedAt: Date.now(),
+  };
+}
+
+export function equipItem(progress: RpgProgress, itemId: string): RpgProgress {
+  if (!progress.collectionItemIds.includes(itemId)) {
+    return progress;
+  }
+
+  return {
+    ...progress,
+    equippedItemId: itemId,
     updatedAt: Date.now(),
   };
 }
@@ -121,4 +150,22 @@ export function getExplorationPercent(progress: RpgProgress, totalMissions: numb
   }
 
   return Math.round((progress.completedMissionIds.length / totalMissions) * 100);
+}
+
+export function getTotalXp(progress: RpgProgress, zones: RpgZone[]): number {
+  return zones.reduce((sum, zone) => {
+    const missionXp = progress.completedMissionIds.includes(zone.mission.id) ? zone.mission.xp : 0;
+    const puzzleXp =
+      zone.puzzle && progress.solvedPuzzleIds.includes(zone.puzzle.id) ? zone.puzzle.xp : 0;
+
+    return sum + missionXp + puzzleXp;
+  }, 0);
+}
+
+export function getPlayerLevel(totalXp: number): number {
+  if (totalXp < 30) {
+    return 1;
+  }
+
+  return Math.min(9, Math.floor(totalXp / 40) + 1);
 }

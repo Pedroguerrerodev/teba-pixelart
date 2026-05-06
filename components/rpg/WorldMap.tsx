@@ -35,14 +35,14 @@ export default function WorldMap({ zones, progress, onOpenZone }: WorldMapProps)
         <div className="absolute inset-0 map-fallback" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,224,151,0.2),transparent_28%),linear-gradient(180deg,rgba(12,18,28,0.08),rgba(12,18,28,0.9))]" />
 
-        <header className="relative z-10 px-4 pt-5">
+        <header className="relative z-10 px-4 pt-32">
           <PixelPanel className="p-4">
             <p className="font-pixel text-[0.5rem] uppercase tracking-[0.2em] text-amber-200/80">
-              Mapa libre
+              Mapa de la Estrella
             </p>
-            <h2 className="mt-2 font-pixel text-lg text-white">Territorio de Teba</h2>
+            <h2 className="mt-2 font-pixel text-lg text-white">Territorio encantado</h2>
             <p className="mt-2 text-xs leading-5 text-stone-200/78">
-              Toca un enclave para abrir su escena, descubrir puntos y guardar recuerdos en tu diario.
+              Elige un enclave. Cada sello suma XP, cada reliquia cambia tu inventario y cada ruta conserva informacion real para visitar Teba.
             </p>
             <XpBar
               className="mt-4"
@@ -67,6 +67,7 @@ export default function WorldMap({ zones, progress, onOpenZone }: WorldMapProps)
               className={`map-node ${completed ? 'map-node-complete' : visited ? 'map-node-visited' : ''}`}
               style={{ left: `${zone.mapX}%`, top: `${zone.mapY}%`, '--zone-accent': zone.accent } as React.CSSProperties}
             >
+              <span className="map-node-aura" />
               <span className="map-node-icon">
                 <ZoneIcon name={zone.nodeIcon} />
               </span>

@@ -5,12 +5,14 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, MapPin, Sparkles } from 'lucide-react';
 import { RpgProgress, RpgZone } from '@/lib/types';
 import PixelPanel from './PixelPanel';
+import RunePuzzle from './RunePuzzle';
 
 interface ZoneViewProps {
   zone: RpgZone;
   progress: RpgProgress;
   onBack: () => void;
   onCompleteMission: (zone: RpgZone) => void;
+  onSolvePuzzle: (zone: RpgZone) => void;
 }
 
 function HotspotIcon({ name }: { name: string }) {
@@ -18,8 +20,15 @@ function HotspotIcon({ name }: { name: string }) {
   return <Icon size={17} aria-hidden />;
 }
 
-export default function ZoneView({ zone, progress, onBack, onCompleteMission }: ZoneViewProps) {
+export default function ZoneView({
+  zone,
+  progress,
+  onBack,
+  onCompleteMission,
+  onSolvePuzzle,
+}: ZoneViewProps) {
   const completed = progress.completedMissionIds.includes(zone.mission.id);
+  const puzzleSolved = zone.puzzle ? progress.solvedPuzzleIds.includes(zone.puzzle.id) : false;
 
   return (
     <main className="app-screen overflow-y-auto pb-28">
@@ -34,7 +43,7 @@ export default function ZoneView({ zone, progress, onBack, onCompleteMission }: 
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/18 to-[#070c15]" />
 
-        <button onClick={onBack} className="icon-button absolute left-4 top-4 z-20" aria-label="Volver al mapa">
+        <button onClick={onBack} className="icon-button absolute left-4 top-32 z-20" aria-label="Volver al mapa">
           <ArrowLeft size={20} aria-hidden />
         </button>
 
@@ -59,10 +68,37 @@ export default function ZoneView({ zone, progress, onBack, onCompleteMission }: 
             {zone.title}
           </h1>
           <p className="mt-2 text-sm text-stone-100/82">{zone.subtitle}</p>
+          <p className="mt-3 max-w-sm text-xs leading-5 text-amber-100/80">{zone.narrative}</p>
         </div>
       </div>
 
       <section className="grid gap-4 px-4 pt-4">
+        <PixelPanel className="p-4" accent={zone.accent}>
+          <p className="font-pixel text-[0.52rem] uppercase tracking-[0.18em] text-amber-200/80">
+            Guia de visita
+          </p>
+          <div className="mt-4 grid gap-3">
+            <div>
+              <h2 className="font-pixel text-[0.64rem] leading-5 text-white">Que ver</h2>
+              <ul className="mt-2 grid gap-2 text-sm leading-6 text-stone-200/82">
+                {zone.visitInfo.whatToSee.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span className="text-[color:var(--panel-accent)]">◆</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-none border border-white/10 bg-white/5 p-3">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[color:var(--panel-accent)]">
+                Dato local
+              </p>
+              <p className="mt-2 text-sm leading-6 text-stone-200/82">{zone.visitInfo.localTip}</p>
+            </div>
+            <p className="text-sm leading-6 text-stone-200/78">{zone.visitInfo.visitorUse}</p>
+          </div>
+        </PixelPanel>
+
         <PixelPanel className="p-4" accent={zone.accent}>
           <div className="flex items-start gap-3">
             <MapPin className="mt-1 shrink-0 text-[color:var(--panel-accent)]" size={18} aria-hidden />
@@ -72,6 +108,15 @@ export default function ZoneView({ zone, progress, onBack, onCompleteMission }: 
             </div>
           </div>
         </PixelPanel>
+
+        {zone.puzzle && (
+          <RunePuzzle
+            puzzle={zone.puzzle}
+            solved={puzzleSolved}
+            accent={zone.accent}
+            onSolve={() => onSolvePuzzle(zone)}
+          />
+        )}
 
         <div className="grid gap-3">
           {zone.hotspots.map((hotspot) => (

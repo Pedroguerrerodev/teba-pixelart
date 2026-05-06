@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Compass, Gem, ScrollText, Settings } from 'lucide-react';
+import { Castle, Compass, Gem, Heart, ScrollText, Settings } from 'lucide-react';
 
 interface MainMenuProps {
   onExplore: () => void;
@@ -39,13 +39,18 @@ export default function MainMenu({ onExplore, onQuests, onCollection, onSettings
       >
         <div className="mb-8">
           <p className="font-pixel text-[0.58rem] uppercase tracking-[0.28em] text-amber-200/80">
-            Guia RPG inmersiva
+            RPG turistico de bolsillo
           </p>
           <h1 className="mt-3 font-pixel text-3xl leading-tight text-white drop-shadow-[0_4px_0_rgba(0,0,0,0.75)]">
             Explora Teba
           </h1>
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            <span className="menu-rune"><Castle size={17} aria-hidden /> Castillo</span>
+            <span className="menu-rune"><Heart size={17} aria-hidden /> Douglas</span>
+            <span className="menu-rune"><Gem size={17} aria-hidden /> Reliquias</span>
+          </div>
           <p className="mt-4 max-w-sm text-sm leading-6 text-stone-100/82">
-            Recorre el castillo, la frontera, el Guadalteba y los sabores del pueblo como si abrieras un mapa magico de bolsillo.
+            Abre el Mapa de la Estrella: sube de nivel, resuelve el sello del corazon y descubre Teba con informacion real de visita.
           </p>
         </div>
 

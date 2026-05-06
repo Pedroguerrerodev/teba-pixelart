@@ -1,4 +1,12 @@
-export type AppScreen = 'menu' | 'character' | 'map' | 'zone' | 'quests' | 'collection' | 'settings';
+export type AppScreen =
+  | 'menu'
+  | 'character'
+  | 'prologue'
+  | 'map'
+  | 'zone'
+  | 'quests'
+  | 'collection'
+  | 'settings';
 
 export type CharacterId = 'arqueologo' | 'senderista' | 'quesero';
 
@@ -32,12 +40,25 @@ export interface Mission {
   xp: number;
 }
 
+export interface Puzzle {
+  id: string;
+  title: string;
+  prompt: string;
+  clue: string;
+  runes: string[];
+  answer: string[];
+  rewardItemId: string;
+  xp: number;
+  solvedText: string;
+}
+
 export interface CollectionItem {
   id: string;
   title: string;
   description: string;
   icon: string;
   zoneId: string;
+  kind: 'seal' | 'relic' | 'tool';
 }
 
 export interface RpgZone {
@@ -53,16 +74,25 @@ export interface RpgZone {
   nodeIcon: string;
   accent: string;
   summary: string;
+  narrative: string;
   guide: string;
+  visitInfo: {
+    whatToSee: string[];
+    localTip: string;
+    visitorUse: string;
+  };
   hotspots: Hotspot[];
   mission: Mission;
+  puzzle?: Puzzle;
 }
 
 export interface RpgProgress {
   selectedCharacterId: CharacterId | null;
   visitedZoneIds: string[];
   completedMissionIds: string[];
+  solvedPuzzleIds: string[];
   collectionItemIds: string[];
+  equippedItemId: string | null;
   musicEnabled: boolean;
   effectsEnabled: boolean;
   reducedMotion: boolean;

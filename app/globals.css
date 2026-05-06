@@ -108,7 +108,23 @@ button {
   position: absolute;
   inset: 0;
   background:
+    radial-gradient(circle at 50% 16%, rgba(255, 226, 156, 0.28), transparent 18%),
     linear-gradient(160deg, #202a35 0%, #6e4e30 48%, #0b1020 100%);
+}
+
+.menu-rune {
+  display: grid;
+  min-height: 58px;
+  place-items: center;
+  gap: 5px;
+  border: 2px solid #020617;
+  background: rgba(13, 19, 31, 0.72);
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 0.58rem;
+  font-weight: 900;
+  color: rgba(248, 243, 231, 0.82);
+  box-shadow: 3px 3px 0 #020617;
 }
 
 .pixel-panel {
@@ -194,7 +210,9 @@ button {
 
 .map-fallback {
   background:
-    linear-gradient(135deg, rgba(120, 160, 90, 0.9), rgba(214, 161, 95, 0.78) 48%, rgba(73, 115, 135, 0.9)),
+    radial-gradient(circle at 52% 22%, rgba(255, 235, 173, 0.35), transparent 13%),
+    radial-gradient(circle at 24% 68%, rgba(122, 166, 217, 0.3), transparent 20%),
+    linear-gradient(135deg, rgba(82, 118, 82, 0.94), rgba(214, 161, 95, 0.78) 48%, rgba(73, 115, 135, 0.94)),
     repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.08) 0 2px, transparent 2px 7px);
 }
 
@@ -212,6 +230,15 @@ button {
   padding: 7px 9px;
   text-align: left;
   box-shadow: 3px 3px 0 #020617, 0 0 22px color-mix(in srgb, var(--zone-accent), transparent 52%);
+}
+
+.map-node-aura {
+  position: absolute;
+  inset: -12px;
+  z-index: -1;
+  border: 1px solid var(--zone-accent);
+  opacity: 0.25;
+  animation: pulse-square 2.8s ease-in-out infinite;
 }
 
 .map-node-icon {
@@ -321,6 +348,85 @@ button {
   font-family: var(--font-pixel), ui-monospace, monospace;
   font-size: 0.55rem;
   color: var(--panel-accent);
+}
+
+.rpg-hud {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 10px;
+  z-index: 38;
+  border: 2px solid #020617;
+  background: rgba(7, 12, 21, 0.82);
+  padding: 10px;
+  box-shadow: 4px 4px 0 #020617, inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.level-orb {
+  display: grid;
+  height: 42px;
+  width: 42px;
+  place-items: center;
+  border: 2px solid #020617;
+  background: radial-gradient(circle at 35% 28%, #fff1b5, #d6a15f 56%, #7a4f24);
+  color: #111827;
+  box-shadow: 3px 3px 0 #020617;
+}
+
+.level-orb span {
+  font-family: var(--font-pixel), ui-monospace, monospace;
+  font-size: 0.82rem;
+}
+
+.prologue-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(214, 161, 95, 0.35), transparent 20%),
+    radial-gradient(circle at 20% 82%, rgba(122, 166, 217, 0.18), transparent 24%),
+    linear-gradient(180deg, #0c1322, #070c15 62%);
+}
+
+.dialogue-row {
+  display: flex;
+  gap: 12px;
+  color: rgba(248, 243, 231, 0.84);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.rune-button {
+  --rune-accent: var(--gold);
+  display: grid;
+  min-height: 54px;
+  place-items: center;
+  border: 2px solid #020617;
+  background: radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.22), transparent 30%), var(--rune-accent);
+  color: #111827;
+  box-shadow: 3px 3px 0 #020617;
+}
+
+.rune-slot {
+  display: grid;
+  height: 38px;
+  width: 38px;
+  place-items: center;
+  border: 2px dashed rgba(248, 243, 231, 0.28);
+  color: rgba(248, 243, 231, 0.52);
+  font-weight: 900;
+}
+
+.rune-slot-filled {
+  border-style: solid;
+  border-color: #020617;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f8f3e7;
+}
+
+.inventory-equipped {
+  outline: 2px solid #86efac;
+  outline-offset: -4px;
 }
 
 @keyframes pulse-square {

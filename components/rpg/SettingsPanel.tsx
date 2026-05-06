@@ -20,7 +20,7 @@ export default function SettingsPanel({
   onReset,
 }: SettingsPanelProps) {
   return (
-    <main className="app-screen overflow-y-auto px-4 pb-28 pt-5">
+    <main className="app-screen overflow-y-auto px-4 pb-28 pt-32">
       <header className="mb-4">
         <p className="font-pixel text-[0.55rem] uppercase tracking-[0.22em] text-amber-200/80">
           Sistema

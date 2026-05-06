@@ -7,7 +7,9 @@ import BottomNav from '@/components/rpg/BottomNav';
 import CharacterSelect from '@/components/rpg/CharacterSelect';
 import CollectionView from '@/components/rpg/CollectionView';
 import MainMenu from '@/components/rpg/MainMenu';
+import Prologue from '@/components/rpg/Prologue';
 import QuestLog from '@/components/rpg/QuestLog';
+import RpgHud from '@/components/rpg/RpgHud';
 import SettingsPanel from '@/components/rpg/SettingsPanel';
 import WorldMap from '@/components/rpg/WorldMap';
 import ZoneView from '@/components/rpg/ZoneView';
@@ -19,6 +21,8 @@ import {
   resetRpgProgress,
   saveRpgProgress,
   selectCharacter,
+  equipItem,
+  solvePuzzle,
   toggleEffects,
   toggleMusic,
   toggleReducedMotion,
@@ -52,6 +56,10 @@ export default function Home() {
   const activeZone = useMemo(
     () => zones.find((zone) => zone.id === activeZoneId) ?? zones[0],
     [activeZoneId]
+  );
+  const selectedCharacter = useMemo(
+    () => characters.find((character) => character.id === progress.selectedCharacterId),
+    [progress.selectedCharacterId]
   );
 
   const playEffect = useCallback(() => {
@@ -88,7 +96,7 @@ export default function Home() {
 
   const beginExplore = useCallback(() => {
     playEffect();
-    setScreen(progress.selectedCharacterId ? 'map' : 'character');
+    setScreen(progress.selectedCharacterId ? 'prologue' : 'character');
   }, [playEffect, progress.selectedCharacterId]);
 
   const chooseCharacter = useCallback(
@@ -115,6 +123,28 @@ export default function Home() {
       setProgress((current) =>
         completeMission(current, zone.mission.id, zone.mission.rewardItemId)
       );
+    },
+    [playEffect]
+  );
+
+  const finishPuzzle = useCallback(
+    (zone: RpgZone) => {
+      if (!zone.puzzle) {
+        return;
+      }
+
+      playEffect();
+      setProgress((current) =>
+        solvePuzzle(current, zone.puzzle!.id, zone.puzzle!.rewardItemId)
+      );
+    },
+    [playEffect]
+  );
+
+  const handleEquipItem = useCallback(
+    (itemId: string) => {
+      playEffect();
+      setProgress((current) => equipItem(current, itemId));
     },
     [playEffect]
   );
@@ -153,8 +183,12 @@ export default function Home() {
               characters={characters}
               selectedCharacterId={progress.selectedCharacterId}
               onSelect={chooseCharacter}
-              onContinue={() => navigate('map')}
+              onContinue={() => navigate('prologue')}
             />
+          )}
+
+          {screen === 'prologue' && (
+            <Prologue character={selectedCharacter} onEnterMap={() => navigate('map')} />
           )}
 
           {screen === 'map' && <WorldMap zones={zones} progress={progress} onOpenZone={openZone} />}
@@ -165,13 +199,14 @@ export default function Home() {
               progress={progress}
               onBack={() => navigate('map')}
               onCompleteMission={finishMission}
+              onSolvePuzzle={finishPuzzle}
             />
           )}
 
           {screen === 'quests' && <QuestLog zones={zones} progress={progress} onOpenZone={openZone} />}
 
           {screen === 'collection' && (
-            <CollectionView items={collectionItems} progress={progress} />
+            <CollectionView items={collectionItems} progress={progress} onEquipItem={handleEquipItem} />
           )}
 
           {screen === 'settings' && (
@@ -186,7 +221,18 @@ export default function Home() {
         </motion.div>
       </AnimatePresence>
 
-      {screen !== 'menu' && <BottomNav current={screen} onNavigate={navigate} />}
+      {!['menu', 'character', 'prologue'].includes(screen) && (
+        <RpgHud
+          character={selectedCharacter}
+          progress={progress}
+          zones={zones}
+          items={collectionItems}
+        />
+      )}
+
+      {!['menu', 'character', 'prologue'].includes(screen) && (
+        <BottomNav current={screen} onNavigate={navigate} />
+      )}
     </div>
   );
 }

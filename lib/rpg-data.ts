@@ -47,8 +47,15 @@ export const zones: RpgZone[] = [
     nodeIcon: 'Castle',
     accent: '#d6a15f',
     summary: 'Una fortaleza almohade clave en la frontera con Granada y simbolo de Teba.',
+    narrative:
+      'Cuando cae la luz, las torres parecen encender una constelacion de piedra. Aqui empieza la ruta del corazon: frontera, memoria y una promesa que viajo desde Escocia.',
     guide:
       'El Castillo de la Estrella domina el paisaje y resume buena parte de la identidad local: frontera, conquista, leyenda y memoria compartida con Escocia.',
+    visitInfo: {
+      whatToSee: ['Torre del Homenaje', 'Aljibes y murallas', 'Centro de interpretacion'],
+      localTip: 'Sube con tiempo para mirar el valle: la escala del castillo se entiende desde arriba.',
+      visitorUse: 'Ideal como primera parada para situar la historia de Teba antes de bajar al casco urbano.',
+    },
     hotspots: [
       {
         id: 'castillo-recintos',
@@ -76,6 +83,19 @@ export const zones: RpgZone[] = [
       rewardItemId: 'sello-castillo',
       xp: 20,
     },
+    puzzle: {
+      id: 'puzzle-corazon',
+      title: 'El sello del corazon',
+      prompt:
+        'Ordena los simbolos de la leyenda: primero la fortaleza, despues el corazon, por ultimo la estrella que guia el regreso.',
+      clue: 'Castillo, corazon, estrella.',
+      runes: ['Castle', 'Heart', 'Sparkles'],
+      answer: ['Castle', 'Heart', 'Sparkles'],
+      rewardItemId: 'fragmento-corazon',
+      xp: 30,
+      solvedText:
+        'El mapa vibra suavemente. Has unido la frontera de Teba con la memoria de Douglas y Robert the Bruce.',
+    },
   },
   {
     id: 'historia',
@@ -90,8 +110,15 @@ export const zones: RpgZone[] = [
     nodeIcon: 'ScrollText',
     accent: '#b77946',
     summary: 'Cuevas, yacimientos y culturas que ocuparon el termino de Teba durante milenios.',
+    narrative:
+      'Bajo cada sendero hay otra Teba. La del silex, la arcilla, las villas, los nombres perdidos y las torres que vinieron despues.',
     guide:
       'Teba no empieza en la Edad Media. Su territorio conserva huellas paleoliticas, neoliticas, iberas, romanas y andalusies.',
+    visitInfo: {
+      whatToSee: ['Cueva de las Palomas', 'Los Castillejos', 'Museo Historico Municipal'],
+      localTip: 'Lee la historia por capas: primero territorio, despues frontera, luego pueblo actual.',
+      visitorUse: 'Perfecta para quien quiere entender por que Teba no es solo una postal del castillo.',
+    },
     hotspots: [
       {
         id: 'historia-palomas',
@@ -133,8 +160,15 @@ export const zones: RpgZone[] = [
     nodeIcon: 'Home',
     accent: '#f5f0da',
     summary: 'El nucleo urbano conserva la imagen andaluza de casas blancas y vida de plaza.',
+    narrative:
+      'El mapa deja de ser pergamino y se convierte en calle. La cal, las campanas y las conversaciones hacen de brujula.',
     guide:
       'El casco urbano de Teba combina casas blancas, palacetes, plazas, la Iglesia de la Santa Cruz Real y vistas del castillo.',
+    visitInfo: {
+      whatToSee: ['Iglesia de la Santa Cruz Real', 'Plazas y calles blancas', 'Vistas hacia el castillo'],
+      localTip: 'La mejor ruta urbana es lenta: mira portadas, balcones y cambios de pendiente.',
+      visitorUse: 'Sirve para pasear sin prisa y conectar monumentos con vida diaria.',
+    },
     hotspots: [
       {
         id: 'pueblo-iglesia',
@@ -176,8 +210,15 @@ export const zones: RpgZone[] = [
     nodeIcon: 'Trees',
     accent: '#78a05a',
     summary: 'Paisajes de cereal, olivar, sierras, rios y el embalse del Guadalteba.',
+    narrative:
+      'Fuera de las murallas, el territorio respira. El agua, el cereal y el olivo dibujan otra aventura: menos espada, mas horizonte.',
     guide:
       'El paisaje de Teba es una mezcla de campos abiertos, olivares, agua y sierra. Es una parte esencial de su atractivo turistico.',
+    visitInfo: {
+      whatToSee: ['Embalse del Guadalteba', 'Campos de cereal y olivar', 'Sierras y miradores'],
+      localTip: 'Busca horas de luz suave: amanecer y atardecer hacen que el paisaje parezca pintado.',
+      visitorUse: 'Ideal para planear una visita tranquila, fotografica o de naturaleza.',
+    },
     hotspots: [
       {
         id: 'naturaleza-embalse',
@@ -219,8 +260,15 @@ export const zones: RpgZone[] = [
     nodeIcon: 'Utensils',
     accent: '#f0b85a',
     summary: 'Quesos, embutidos, aceite de oliva, leche de cabra y platos tradicionales.',
+    narrative:
+      'No todo tesoro brilla. Algunos se cortan en tabla, se riegan con aceite o se guardan en recetas que pasan de cocina en cocina.',
     guide:
       'La cocina local habla de campo, ganaderia y celebraciones: porra, lavapuertas, ajoblanco, pan de higo, membrillo y queso artesano.',
+    visitInfo: {
+      whatToSee: ['Feria del Queso Artesano', 'Productos de cabra', 'Aceite, embutidos y recetas locales'],
+      localTip: 'Pregunta por productos de temporada: el sabor cambia con el calendario del pueblo.',
+      visitorUse: 'Convierte la visita en una ruta de compras, degustacion y memoria familiar.',
+    },
     hotspots: [
       {
         id: 'gastronomia-queso',
@@ -262,8 +310,15 @@ export const zones: RpgZone[] = [
     nodeIcon: 'Flag',
     accent: '#7aa6d9',
     summary: 'Recreaciones medievales, musica, mercado y la memoria de Sir James Douglas.',
+    narrative:
+      'El eco de las gaitas cruza el Guadalteba. En esta zona el mapa se abre hacia Escocia y la historia se vuelve rito compartido.',
     guide:
       'Douglas Days convierte una historia medieval en un puente cultural actual entre Teba y Escocia.',
+    visitInfo: {
+      whatToSee: ['Recreaciones medievales', 'Mercado y pasacalles', 'Hermanamiento con Melrose'],
+      localTip: 'Douglas Days se disfruta mejor entendiendo antes la batalla de 1330.',
+      visitorUse: 'Perfecto para explicar por que Teba tiene una conexion internacional tan singular.',
+    },
     hotspots: [
       {
         id: 'douglas-melrose',
@@ -305,8 +360,15 @@ export const zones: RpgZone[] = [
     nodeIcon: 'Landmark',
     accent: '#b8a07a',
     summary: 'Museo Historico Municipal, Museo Parroquial y otros espacios de memoria.',
+    narrative:
+      'Cuando el mapa necesita silencio, abre sus vitrinas. Cada pieza es una llave pequena para una puerta grande.',
     guide:
       'Los museos y edificios patrimoniales ordenan la memoria local y ayudan a entender el territorio antes y despues de visitarlo.',
+    visitInfo: {
+      whatToSee: ['Museo Historico Municipal', 'Museo Parroquial', 'Patrimonio religioso y arqueologico'],
+      localTip: 'Visita los museos antes de explorar: luego reconoceras detalles que antes pasarian de largo.',
+      visitorUse: 'Una parada util para contextualizar la visita y dar profundidad al recorrido.',
+    },
     hotspots: [
       {
         id: 'museos-historico',
@@ -337,7 +399,7 @@ export const zones: RpgZone[] = [
   },
 ];
 
-export const collectionItems: CollectionItem[] = zones.map((zone) => ({
+const zoneSealItems: CollectionItem[] = zones.map((zone) => ({
   id: zone.mission.rewardItemId,
   title: zone.mission.rewardItemId
     .split('-')
@@ -346,6 +408,20 @@ export const collectionItems: CollectionItem[] = zones.map((zone) => ({
   description: `Recuerdo desbloqueado al completar "${zone.mission.title}".`,
   icon: zone.nodeIcon,
   zoneId: zone.id,
+  kind: 'seal' as const,
 }));
+
+const puzzleRelicItems: CollectionItem[] = zones
+  .filter((zone) => zone.puzzle)
+  .map((zone) => ({
+    id: zone.puzzle!.rewardItemId,
+    title: 'Fragmento Del Corazon',
+    description: zone.puzzle!.solvedText,
+    icon: 'Heart',
+    zoneId: zone.id,
+    kind: 'relic' as const,
+  }));
+
+export const collectionItems: CollectionItem[] = [...zoneSealItems, ...puzzleRelicItems];
 
 export const totalXp = zones.reduce((sum, zone) => sum + zone.mission.xp, 0);
