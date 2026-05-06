@@ -18,6 +18,7 @@ import {
   completeMission,
   createDefaultRpgProgress,
   loadRpgProgress,
+  hasSavedGame,
   resetRpgProgress,
   saveRpgProgress,
   selectCharacter,
@@ -44,9 +45,6 @@ export default function Home() {
   useEffect(() => {
     const saved = loadRpgProgress();
     setProgress(saved);
-    if (saved.selectedCharacterId) {
-      setScreen('map');
-    }
   }, []);
 
   useEffect(() => {
@@ -61,6 +59,7 @@ export default function Home() {
     () => characters.find((character) => character.id === progress.selectedCharacterId),
     [progress.selectedCharacterId]
   );
+  const showGameChrome = hasSavedGame(progress) && !['menu', 'character', 'prologue'].includes(screen);
 
   const playEffect = useCallback(() => {
     if (!progress.effectsEnabled || typeof window === 'undefined') {
@@ -97,6 +96,18 @@ export default function Home() {
   const beginExplore = useCallback(() => {
     playEffect();
     setScreen(progress.selectedCharacterId ? 'prologue' : 'character');
+  }, [playEffect, progress.selectedCharacterId]);
+
+  const beginNewGame = useCallback(() => {
+    playEffect();
+    setProgress(resetRpgProgress());
+    setActiveZoneId(null);
+    setScreen('character');
+  }, [playEffect]);
+
+  const continueGame = useCallback(() => {
+    playEffect();
+    setScreen(progress.selectedCharacterId ? 'map' : 'character');
   }, [playEffect, progress.selectedCharacterId]);
 
   const chooseCharacter = useCallback(
@@ -158,7 +169,11 @@ export default function Home() {
 
   return (
     <div className="rpg-app">
-      <AudioController enabled={progress.musicEnabled} />
+      <AudioController
+        enabled={progress.musicEnabled}
+        src={screen === 'menu' ? '/sound/musica-inicio.mp3' : '/sound/bso.mp3'}
+        volume={screen === 'menu' ? 0.28 : 0.18}
+      />
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -171,9 +186,9 @@ export default function Home() {
         >
           {screen === 'menu' && (
             <MainMenu
-              onExplore={beginExplore}
-              onQuests={() => navigate('quests')}
-              onCollection={() => navigate('collection')}
+              hasSave={hasSavedGame(progress)}
+              onNewGame={beginNewGame}
+              onContinue={continueGame}
               onSettings={() => navigate('settings')}
             />
           )}
@@ -221,7 +236,7 @@ export default function Home() {
         </motion.div>
       </AnimatePresence>
 
-      {!['menu', 'character', 'prologue'].includes(screen) && (
+      {showGameChrome && (
         <RpgHud
           character={selectedCharacter}
           progress={progress}
@@ -230,7 +245,7 @@ export default function Home() {
         />
       )}
 
-      {!['menu', 'character', 'prologue'].includes(screen) && (
+      {showGameChrome && (
         <BottomNav current={screen} onNavigate={navigate} />
       )}
     </div>

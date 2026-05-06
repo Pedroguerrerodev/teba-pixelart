@@ -1,71 +1,75 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Castle, Compass, Gem, Heart, ScrollText, Settings } from 'lucide-react';
+import { ChevronRight, Settings } from 'lucide-react';
 
 interface MainMenuProps {
-  onExplore: () => void;
-  onQuests: () => void;
-  onCollection: () => void;
+  hasSave: boolean;
+  onNewGame: () => void;
+  onContinue: () => void;
   onSettings: () => void;
 }
 
-export default function MainMenu({ onExplore, onQuests, onCollection, onSettings }: MainMenuProps) {
+export default function MainMenu({ hasSave, onNewGame, onContinue, onSettings }: MainMenuProps) {
   const actions = [
-    { label: 'Explorar Teba', icon: Compass, action: onExplore, primary: true },
-    { label: 'Misiones', icon: ScrollText, action: onQuests },
-    { label: 'Coleccion', icon: Gem, action: onCollection },
-    { label: 'Ajustes', icon: Settings, action: onSettings },
+    { label: 'Nueva partida', action: onNewGame, disabled: false },
+    { label: 'Continuar', action: onContinue, disabled: !hasSave },
+    { label: 'Ajustes', action: onSettings, disabled: false },
   ];
 
   return (
-    <main className="app-screen">
-      <div className="menu-backdrop">
+    <main className="app-screen title-screen">
+      <div className="title-backdrop">
         <img
-          src="/images/main-menu.png"
+          src="/images/castillo-fondo.png"
           alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-90"
+          className="absolute inset-0 h-full w-full object-cover"
           onError={(event) => {
             event.currentTarget.src = '/images/douglasday.png';
           }}
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(246,203,113,0.28),transparent_28%),linear-gradient(180deg,rgba(7,12,21,0.2),rgba(7,12,21,0.94))]" />
+        <div className="absolute inset-0 title-vignette" />
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 flex h-full flex-col justify-end px-5 pb-8 pt-8"
+        transition={{ duration: 0.7 }}
+        className="relative z-10 flex h-full flex-col items-center justify-between px-5 pb-7 pt-16 text-center"
       >
-        <div className="mb-8">
-          <p className="font-pixel text-[0.58rem] uppercase tracking-[0.28em] text-amber-200/80">
-            RPG turistico de bolsillo
+        <header className="title-logo">
+          <p className="font-pixel text-[0.58rem] uppercase tracking-[0.42em] text-white/80">
+            El mapa de la estrella
           </p>
-          <h1 className="mt-3 font-pixel text-3xl leading-tight text-white drop-shadow-[0_4px_0_rgba(0,0,0,0.75)]">
-            Explora Teba
+          <h1 className="title-teba" aria-label="Teba">
+            TEBA
           </h1>
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            <span className="menu-rune"><Castle size={17} aria-hidden /> Castillo</span>
-            <span className="menu-rune"><Heart size={17} aria-hidden /> Douglas</span>
-            <span className="menu-rune"><Gem size={17} aria-hidden /> Reliquias</span>
-          </div>
-          <p className="mt-4 max-w-sm text-sm leading-6 text-stone-100/82">
-            Abre el Mapa de la Estrella: sube de nivel, resuelve el sello del corazon y descubre Teba con informacion real de visita.
+          <div className="title-rule" />
+          <p className="mt-3 text-sm font-bold uppercase tracking-[0.26em] text-white/82">
+            Douglas Heart Traveler
           </p>
-        </div>
+        </header>
 
-        <div className="grid gap-3">
-          {actions.map(({ label, icon: Icon, action, primary }) => (
+        <div className="title-menu" role="menu" aria-label="Menu principal">
+          {actions.map(({ label, action, disabled }) => (
             <button
               key={label}
               onClick={action}
-              className={`pixel-action ${primary ? 'pixel-action-primary' : ''}`}
+              disabled={disabled}
+              className="title-menu-item group"
+              role="menuitem"
             >
-              <Icon size={20} aria-hidden />
+              <ChevronRight className="title-menu-arrow" size={24} aria-hidden />
               <span>{label}</span>
+              {label === 'Ajustes' && <Settings className="opacity-70" size={18} aria-hidden />}
+              {disabled && <small>Sin partida guardada</small>}
             </button>
           ))}
         </div>
+
+        <footer className="font-pixel text-[0.48rem] uppercase tracking-[0.2em] text-white/72">
+          Teba - Malaga
+        </footer>
       </motion.div>
     </main>
   );

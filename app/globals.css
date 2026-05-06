@@ -112,6 +112,107 @@ button {
     linear-gradient(160deg, #202a35 0%, #6e4e30 48%, #0b1020 100%);
 }
 
+.title-screen {
+  background: #05070d;
+}
+
+.title-backdrop {
+  position: absolute;
+  inset: 0;
+  background: #05070d;
+}
+
+.title-backdrop img {
+  filter: saturate(0.92) contrast(1.08);
+  transform: scale(1.02);
+}
+
+.title-vignette {
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.1), transparent 21%),
+    linear-gradient(180deg, rgba(5, 7, 13, 0.28) 0%, rgba(5, 7, 13, 0.08) 28%, rgba(5, 7, 13, 0.55) 66%, rgba(5, 7, 13, 0.92) 100%),
+    linear-gradient(90deg, rgba(5, 7, 13, 0.72), transparent 28%, transparent 72%, rgba(5, 7, 13, 0.72));
+  backdrop-filter: blur(1.5px);
+}
+
+.title-logo {
+  width: min(100%, 520px);
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.8);
+}
+
+.title-teba {
+  margin-top: 18px;
+  font-family: var(--font-pixel), ui-monospace, monospace;
+  font-size: clamp(3.4rem, 17vw, 6.6rem);
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.94);
+  letter-spacing: 0;
+  text-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.55),
+    0 0 24px rgba(255, 255, 255, 0.5),
+    0 0 46px rgba(214, 161, 95, 0.34);
+}
+
+.title-rule {
+  height: 2px;
+  width: min(78%, 420px);
+  margin: 18px auto 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+.title-menu {
+  display: grid;
+  width: min(100%, 320px);
+  gap: 12px;
+  margin-bottom: 5vh;
+}
+
+.title-menu-item {
+  position: relative;
+  display: grid;
+  min-height: 44px;
+  grid-template-columns: 34px 1fr 34px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 1.42rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.72),
+    0 0 14px rgba(255, 255, 255, 0.38);
+}
+
+.title-menu-item small {
+  grid-column: 1 / -1;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.54);
+}
+
+.title-menu-item:disabled {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.title-menu-arrow {
+  justify-self: end;
+  opacity: 0;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+}
+
+.title-menu-item:not(:disabled):focus-visible .title-menu-arrow,
+.title-menu-item:not(:disabled):hover .title-menu-arrow,
+.title-menu-item:not(:disabled):active .title-menu-arrow {
+  opacity: 1;
+}
+
+.title-menu-item:not(:disabled):active {
+  transform: translateY(1px);
+}
+
 .menu-rune {
   display: grid;
   min-height: 58px;

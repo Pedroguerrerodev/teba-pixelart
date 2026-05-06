@@ -4,21 +4,24 @@ import { useEffect, useRef } from 'react';
 
 interface AudioControllerProps {
   enabled: boolean;
+  src: string;
+  volume?: number;
 }
 
-export default function AudioController({ enabled }: AudioControllerProps) {
+export default function AudioController({ enabled, src, volume = 0.18 }: AudioControllerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    audioRef.current = new Audio('/sound/bso.mp3');
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.18;
+    const audio = new Audio(src);
+    audio.loop = true;
+    audio.volume = volume;
+    audioRef.current = audio;
 
     return () => {
-      audioRef.current?.pause();
+      audio.pause();
       audioRef.current = null;
     };
-  }, []);
+  }, [src, volume]);
 
   useEffect(() => {
     const audio = audioRef.current;

@@ -5,6 +5,7 @@ import {
   equipItem,
   getPlayerLevel,
   getTotalXp,
+  hasSavedGame,
   selectCharacter,
   solvePuzzle,
   toggleEffects,
@@ -26,6 +27,12 @@ describe('rpg progress', () => {
     expect(progress.musicEnabled).toBe(true);
     expect(progress.effectsEnabled).toBe(true);
     expect(progress.reducedMotion).toBe(false);
+  });
+
+  it('detects a saved game only when meaningful progress exists', () => {
+    expect(hasSavedGame(createDefaultRpgProgress())).toBe(false);
+    expect(hasSavedGame(selectCharacter(createDefaultRpgProgress(), 'senderista'))).toBe(true);
+    expect(hasSavedGame(visitZone(createDefaultRpgProgress(), 'castillo'))).toBe(true);
   });
 
   it('selects a character without losing existing progress', () => {

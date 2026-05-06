@@ -144,6 +144,16 @@ export function resetRpgProgress(): RpgProgress {
   return progress;
 }
 
+export function hasSavedGame(progress: RpgProgress): boolean {
+  return Boolean(
+    progress.selectedCharacterId ||
+      progress.visitedZoneIds.length ||
+      progress.completedMissionIds.length ||
+      progress.solvedPuzzleIds.length ||
+      progress.collectionItemIds.length
+  );
+}
+
 export function getExplorationPercent(progress: RpgProgress, totalMissions: number): number {
   if (totalMissions <= 0) {
     return 0;
