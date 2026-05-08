@@ -119,7 +119,7 @@ button {
 .title-backdrop {
   position: absolute;
   inset: 0;
-  background: #05070d;
+  background: #05070d url('/images/castillo-fondo.png') center / cover no-repeat;
 }
 
 .title-backdrop-image {

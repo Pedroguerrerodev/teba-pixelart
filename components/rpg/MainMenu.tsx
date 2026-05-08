@@ -26,6 +26,7 @@ const titleBackgrounds = [
 
 export default function MainMenu({ hasSave, onNewGame, onContinue, onSettings }: MainMenuProps) {
   const [backgroundIndex, setBackgroundIndex] = useState(0);
+  const [loadedBackgrounds, setLoadedBackgrounds] = useState<string[]>([titleBackgrounds[0]]);
   const actions = [
     { label: 'Nueva partida', action: onNewGame, disabled: false },
     { label: 'Continuar', action: onContinue, disabled: !hasSave },
@@ -33,14 +34,28 @@ export default function MainMenu({ hasSave, onNewGame, onContinue, onSettings }:
   ];
 
   useEffect(() => {
+    titleBackgrounds.slice(1).forEach((src) => {
+      const image = new Image();
+      image.onload = () => {
+        setLoadedBackgrounds((current) => (current.includes(src) ? current : [...current, src]));
+      };
+      image.src = src;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (loadedBackgrounds.length < 2) {
+      return;
+    }
+
     const interval = window.setInterval(() => {
-      setBackgroundIndex((current) => (current + 1) % titleBackgrounds.length);
+      setBackgroundIndex((current) => (current + 1) % loadedBackgrounds.length);
     }, 10000);
 
     return () => window.clearInterval(interval);
-  }, []);
+  }, [loadedBackgrounds.length]);
 
-  const activeBackground = titleBackgrounds[backgroundIndex];
+  const activeBackground = loadedBackgrounds[backgroundIndex % loadedBackgrounds.length];
 
   return (
     <main className="app-screen title-screen" onPointerDown={startMusicFromGesture}>
