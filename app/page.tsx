@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AudioController from '@/components/rpg/AudioController';
+import AppLoader from '@/components/rpg/AppLoader';
 import BottomNav from '@/components/rpg/BottomNav';
 import CharacterSelect from '@/components/rpg/CharacterSelect';
 import CollectionView from '@/components/rpg/CollectionView';
@@ -18,6 +19,7 @@ import WorldMap from '@/components/rpg/WorldMap';
 import ZoneView from '@/components/rpg/ZoneView';
 import { characters, collectionItems, zones } from '@/lib/rpg-data';
 import {
+  acknowledgeHistorianArchive,
   completeHistorianStage,
   getHistorianStage,
   visitHistorianStage,
@@ -45,6 +47,7 @@ type WebkitAudioWindow = Window &
   };
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
   const [screen, setScreen] = useState<AppScreen>('menu');
   const [progress, setProgress] = useState<RpgProgress>(() => createDefaultRpgProgress());
   const [activeZoneId, setActiveZoneId] = useState<string | null>(null);
@@ -54,6 +57,38 @@ export default function Home() {
   useEffect(() => {
     const saved = loadRpgProgress();
     setProgress(saved);
+  }, []);
+
+  useEffect(() => {
+    const loaderAssets = [
+      '/images/castillo-fondo.png',
+      '/images/castillo-dia.png',
+      '/images/tajotorrox-vetical.png',
+    ];
+    let active = true;
+
+    const preloadImages = Promise.allSettled(
+      loaderAssets.map(
+        (src) =>
+          new Promise<void>((resolve) => {
+            const image = new Image();
+            image.onload = () => resolve();
+            image.onerror = () => resolve();
+            image.src = src;
+          })
+      )
+    );
+    const minimumDelay = new Promise<void>((resolve) => window.setTimeout(resolve, 950));
+
+    Promise.all([preloadImages, minimumDelay]).then(() => {
+      if (active) {
+        setIsLoading(false);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -72,13 +107,20 @@ export default function Home() {
     () => (activeHistorianStageId ? getHistorianStage(activeHistorianStageId) : undefined),
     [activeHistorianStageId]
   );
+  const historianNeedsArchiveIntro =
+    selectedCharacter?.id === 'arqueologo' && !progress.historianCampaign.archiveIntroduced;
   const showGameChrome =
     hasSavedGame(progress) &&
+    !historianNeedsArchiveIntro &&
     !(
       ['menu', 'settings', 'character', 'prologue', 'guide', 'historian-campaign', 'historian-stage'].includes(screen) ||
-      (screen === 'map' && selectedCharacter?.id === 'arqueologo')
+      (screen === 'map' && selectedCharacter?.id === 'arqueologo') ||
+      (screen === 'collection' && selectedCharacter?.id === 'arqueologo')
     );
-  const showGameNav = hasSavedGame(progress) && !['menu', 'settings', 'character', 'prologue'].includes(screen);
+  const showGameNav =
+    hasSavedGame(progress) &&
+    !(historianNeedsArchiveIntro && screen === 'collection') &&
+    !['menu', 'settings', 'character', 'prologue'].includes(screen);
   const musicSrc =
     ['menu', 'settings'].includes(screen) || selectedCharacter?.id !== 'arqueologo'
       ? '/sound/musica-inicio.mp3'
@@ -132,8 +174,15 @@ export default function Home() {
 
   const continueGame = useCallback(() => {
     playEffect();
-    setScreen(progress.selectedCharacterId ? 'map' : 'character');
-  }, [playEffect, progress.selectedCharacterId]);
+    setScreen(
+      progress.selectedCharacterId
+        ? progress.selectedCharacterId === 'arqueologo' &&
+          !progress.historianCampaign.archiveIntroduced
+          ? 'collection'
+          : 'map'
+        : 'character'
+    );
+  }, [playEffect, progress.historianCampaign.archiveIntroduced, progress.selectedCharacterId]);
 
   const chooseCharacter = useCallback(
     (characterId: CharacterId) => {
@@ -211,6 +260,12 @@ export default function Home() {
     [playEffect]
   );
 
+  const introduceHistorianArchive = useCallback(() => {
+    playEffect();
+    setProgress((current) => acknowledgeHistorianArchive(current));
+    setScreen('map');
+  }, [playEffect]);
+
   return (
     <div className="rpg-app">
       <AudioController
@@ -220,6 +275,9 @@ export default function Home() {
       />
 
       <AnimatePresence mode="wait">
+        {isLoading ? (
+          <AppLoader key="loader" />
+        ) : (
         <motion.div
           key={`${screen}-${activeZoneId ?? 'none'}`}
           initial={progress.reducedMotion ? false : { opacity: 0, y: 18 }}
@@ -242,17 +300,24 @@ export default function Home() {
               characters={characters}
               selectedCharacterId={progress.selectedCharacterId}
               onSelect={chooseCharacter}
-              onContinue={() => navigate('prologue')}
+              onContinue={(characterId) => navigate(characterId === 'arqueologo' ? 'map' : 'prologue')}
             />
           )}
 
           {screen === 'prologue' && (
-            <Prologue character={selectedCharacter} onEnterMap={() => navigate('map')} />
+            <Prologue
+              character={selectedCharacter}
+              onEnterMap={() => navigate(selectedCharacter?.id === 'arqueologo' ? 'collection' : 'map')}
+            />
           )}
 
           {screen === 'map' &&
             (selectedCharacter?.id === 'arqueologo' ? (
-              <HistorianCampaignMap progress={progress} onOpenStage={openHistorianStage} />
+              <HistorianCampaignMap
+                progress={progress}
+                onOpenStage={openHistorianStage}
+                onOpenArchive={() => navigate('collection')}
+              />
             ) : (
               <WorldMap zones={zones} progress={progress} onOpenZone={openZone} />
             ))}
@@ -270,7 +335,12 @@ export default function Home() {
           {screen === 'quests' && <QuestLog zones={zones} progress={progress} onOpenZone={openZone} />}
 
           {screen === 'collection' && (
-            <CollectionView items={collectionItems} progress={progress} onEquipItem={handleEquipItem} />
+            <CollectionView
+              items={collectionItems}
+              progress={progress}
+              onEquipItem={handleEquipItem}
+              onAcknowledgeHistorianArchive={introduceHistorianArchive}
+            />
           )}
 
           {screen === 'guide' && (
@@ -284,7 +354,11 @@ export default function Home() {
           )}
 
           {screen === 'historian-campaign' && (
-            <HistorianCampaignMap progress={progress} onOpenStage={openHistorianStage} />
+            <HistorianCampaignMap
+              progress={progress}
+              onOpenStage={openHistorianStage}
+              onOpenArchive={() => navigate('collection')}
+            />
           )}
 
           {screen === 'historian-stage' && activeHistorianStage && (
@@ -307,6 +381,7 @@ export default function Home() {
             />
           )}
         </motion.div>
+        )}
       </AnimatePresence>
 
       {showGameChrome && (

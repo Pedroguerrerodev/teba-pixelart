@@ -1,8 +1,8 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChevronRight, Settings } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface MainMenuProps {
   hasSave: boolean;
@@ -27,6 +27,12 @@ const titleBackgrounds = [
 export default function MainMenu({ hasSave, onNewGame, onContinue, onSettings }: MainMenuProps) {
   const [backgroundIndex, setBackgroundIndex] = useState(0);
   const [loadedBackgrounds, setLoadedBackgrounds] = useState<string[]>([titleBackgrounds[0]]);
+  const [visibleLayer, setVisibleLayer] = useState(0);
+  const visibleLayerRef = useRef(0);
+  const [layerBackgrounds, setLayerBackgrounds] = useState<[string, string]>([
+    titleBackgrounds[0],
+    titleBackgrounds[0],
+  ]);
   const actions = [
     { label: 'Nueva partida', action: onNewGame, disabled: false },
     { label: 'Continuar', action: onContinue, disabled: !hasSave },
@@ -34,10 +40,16 @@ export default function MainMenu({ hasSave, onNewGame, onContinue, onSettings }:
   ];
 
   useEffect(() => {
-    titleBackgrounds.slice(1).forEach((src) => {
+    titleBackgrounds.forEach((src) => {
       const image = new Image();
-      image.onload = () => {
+      image.onload = async () => {
+        await image.decode?.().catch(() => undefined);
         setLoadedBackgrounds((current) => (current.includes(src) ? current : [...current, src]));
+      };
+      image.onerror = () => {
+        setLoadedBackgrounds((current) =>
+          current.includes(titleBackgrounds[0]) ? current : [...current, titleBackgrounds[0]]
+        );
       };
       image.src = src;
     });
@@ -57,27 +69,43 @@ export default function MainMenu({ hasSave, onNewGame, onContinue, onSettings }:
 
   const activeBackground = loadedBackgrounds[backgroundIndex % loadedBackgrounds.length];
 
+  useEffect(() => {
+    visibleLayerRef.current = visibleLayer;
+  }, [visibleLayer]);
+
+  useEffect(() => {
+    const currentLayer = visibleLayerRef.current;
+    const nextLayer = currentLayer === 0 ? 1 : 0;
+
+    setLayerBackgrounds((current) => {
+      if (current[currentLayer] === activeBackground) {
+        return current;
+      }
+
+      const nextBackgrounds: [string, string] = [...current] as [string, string];
+      nextBackgrounds[nextLayer] = activeBackground;
+      return nextBackgrounds;
+    });
+
+    const frame = window.requestAnimationFrame(() => {
+      setVisibleLayer(nextLayer);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeBackground]);
+
   return (
     <main className="app-screen title-screen" onPointerDown={startMusicFromGesture}>
       <div className="title-backdrop">
-        <AnimatePresence mode="sync">
-          <motion.img
-            key={activeBackground}
-            src={activeBackground}
-            alt=""
-            initial={{ opacity: 0, scale: 1.08 }}
-            animate={{ opacity: 1, scale: 1.02 }}
-            exit={{ opacity: 0, scale: 1.02 }}
-            transition={{
-              opacity: { duration: 1.25, ease: 'easeInOut' },
-              scale: { duration: 10, ease: 'linear' },
-            }}
-            className="title-backdrop-image"
-            onError={(event) => {
-              event.currentTarget.src = '/images/castillo-fondo.png';
-            }}
+        {layerBackgrounds.map((src, index) => (
+          <div
+            key={`${index}-${src}`}
+            className={`title-backdrop-layer ${
+              visibleLayer === index ? 'title-backdrop-layer-active' : ''
+            }`}
+            style={{ backgroundImage: `url("${src}")` }}
           />
-        </AnimatePresence>
+        ))}
         <div className="absolute inset-0 title-vignette" />
       </div>
 

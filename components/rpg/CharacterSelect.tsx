@@ -1,14 +1,15 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { ArrowLeft, Check, Sparkles } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { RpgCharacter } from '@/lib/types';
 
 interface CharacterSelectProps {
   characters: RpgCharacter[];
   selectedCharacterId: string | null;
   onSelect: (id: RpgCharacter['id']) => void;
-  onContinue: () => void;
+  onContinue: (id: RpgCharacter['id']) => void;
 }
 
 export default function CharacterSelect({
@@ -17,10 +18,79 @@ export default function CharacterSelect({
   onSelect,
   onContinue,
 }: CharacterSelectProps) {
+  const [previewCharacterId, setPreviewCharacterId] = useState<RpgCharacter['id'] | null>(null);
+  const previewCharacter = useMemo(
+    () => characters.find((character) => character.id === previewCharacterId),
+    [characters, previewCharacterId]
+  );
+
+  const adventureDescriptions: Record<RpgCharacter['id'], string> = {
+    arqueologo:
+      'Recupera el Codice visitando los lugares mas destacados de la historia de Teba. Cada etapa revelara piezas, personajes y secretos que dormian entre piedras antiguas.',
+    senderista:
+      'Camina Teba desde sus miradores, sierras y caminos. La aventura seguira el paisaje: viento, agua, cereal, olivares y pequenos descubrimientos fuera del ruido.',
+    quesero:
+      'Descubre la Teba que se celebra: bares, fiestas, feria, sabores y encuentros. Aqui la historia se cuenta entre mesas, musica y vida del pueblo.',
+  };
+
   const chooseCharacter = (characterId: RpgCharacter['id']) => {
     onSelect(characterId);
-    onContinue();
+    onContinue(characterId);
   };
+
+  if (previewCharacter) {
+    return (
+      <main className="app-screen overflow-y-auto px-4 py-5">
+        <div className="mx-auto flex min-h-full w-full max-w-md flex-col">
+          <button
+            type="button"
+            onClick={() => setPreviewCharacterId(null)}
+            className="character-preview-back"
+          >
+            <ArrowLeft size={16} aria-hidden />
+            <span>Guias</span>
+          </button>
+
+          <motion.section
+            initial={{ opacity: 0, y: 18, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="character-preview"
+            style={{ '--character-accent': previewCharacter.accent } as React.CSSProperties}
+          >
+            <div className="character-preview-portrait">
+              <img
+                src={previewCharacter.portrait}
+                alt=""
+                onError={(event) => {
+                  event.currentTarget.src = '/images/mascota-estrella.png';
+                }}
+              />
+            </div>
+
+            <div className="character-preview-copy">
+              <p className="font-pixel text-[0.55rem] uppercase tracking-[0.22em] text-[color:var(--character-accent)]">
+                Tu guia local
+              </p>
+              <h2>{previewCharacter.name}</h2>
+              <p className="character-preview-title">{previewCharacter.title}</p>
+              <p className="character-preview-story">{adventureDescriptions[previewCharacter.id]}</p>
+              <p className="character-preview-quote">{previewCharacter.quote}</p>
+            </div>
+          </motion.section>
+
+          <button
+            type="button"
+            onClick={() => chooseCharacter(previewCharacter.id)}
+            className="pixel-action pixel-action-primary mt-4"
+            style={{ '--action-accent': previewCharacter.accent } as React.CSSProperties}
+          >
+            <Sparkles size={18} aria-hidden />
+            <span>Elegir este guia</span>
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="app-screen overflow-y-auto px-4 py-5">
@@ -29,9 +99,10 @@ export default function CharacterSelect({
           <p className="font-pixel text-[0.55rem] uppercase tracking-[0.22em] text-amber-200/80">
             Antes de abrir el mapa
           </p>
-          <h2 className="mt-3 font-pixel text-xl leading-8 text-white">Elige tu mirada</h2>
+          <h2 className="mt-3 font-pixel text-xl leading-8 text-white">Elige tu guia</h2>
           <p className="mt-3 text-sm leading-6 text-stone-200/78">
-            Elige como quieres explorar Teba. La aventura empezara al tocar una carta.
+            La decision que tomes aqui cambiara el tono de la aventura. Mas adelante podras
+            cambiar de guia para explorar Teba de otra forma.
           </p>
         </div>
 
@@ -45,7 +116,7 @@ export default function CharacterSelect({
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.06 }}
-                onClick={() => chooseCharacter(character.id)}
+                onClick={() => setPreviewCharacterId(character.id)}
                 className={`character-card ${selected ? 'character-card-selected' : ''}`}
                 style={{ '--character-accent': character.accent } as React.CSSProperties}
               >

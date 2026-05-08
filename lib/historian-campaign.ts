@@ -7,15 +7,47 @@ export interface HistorianArchiveEntry {
   summary: string;
 }
 
+export interface HistorianClue {
+  id: string;
+  title: string;
+  eyebrow: string;
+  body: string;
+}
+
+export interface HistorianChallengeOption {
+  id: string;
+  label: string;
+}
+
+export interface HistorianChallenge {
+  prompt: string;
+  helper: string;
+  options: HistorianChallengeOption[];
+  answer: string[];
+  successText: string;
+}
+
+export interface HistorianTouristTip {
+  headline: string;
+  items: string[];
+  localAdvice: string;
+}
+
 export interface HistorianStage {
   id: string;
   title: string;
+  chapterTitle?: string;
   period: string;
   mapX: number;
   mapY: number;
   summary: string;
+  narrative?: string;
   whyItMatters: string;
   places: string[];
+  clues?: HistorianClue[];
+  challenge?: HistorianChallenge;
+  touristTip?: HistorianTouristTip;
+  rewardTitle?: string;
   missionTitle: string;
   missionDescription: string;
   archiveEntryIds: string[];
@@ -31,6 +63,13 @@ function uniqueMany(values: string[], nextValues: string[]): string[] {
 }
 
 export const historianArchiveEntries: HistorianArchiveEntry[] = [
+  {
+    id: 'archivo-teba',
+    title: 'Archivo de Teba',
+    category: 'Concepto',
+    summary:
+      'La primera pagina del Codice: una memoria fragmentada que espera ser reconstruida ruta a ruta.',
+  },
   {
     id: 'cueva-palomas',
     title: 'Cueva de las Palomas',
@@ -139,14 +178,63 @@ export const historianStages: HistorianStage[] = [
   {
     id: 'prehistoria',
     title: 'Prehistoria',
+    chapterTitle: 'Capitulo I: Antes de Teba',
     period: 'Paleolitico y Neolitico',
     mapX: 20,
     mapY: 66,
     summary:
       'Bandas de cazadores-recolectores y primeras comunidades agricolas dejaron huellas en cuevas, sierras y valles del Guadalteba.',
+    narrative:
+      'Antes de que Teba tuviera nombre, el Guadalteba ya era refugio, despensa y camino. La primera mision del Historiador no es buscar una fecha: es aprender a leer una huella.',
     whyItMatters:
       'Teba no empieza con el castillo: su territorio conserva una memoria humana mucho mas antigua.',
     places: ['Cueva de las Palomas', 'Sima del Silex', 'Llano Espa'],
+    clues: [
+      {
+        id: 'cazadores',
+        title: 'Cazadores del Guadalteba',
+        eyebrow: 'Primera pista',
+        body:
+          'Las industrias paleoliticas hablan de grupos que se movian por el valle aprovechando agua, caza, piedra y refugio.',
+      },
+      {
+        id: 'silex',
+        title: 'La memoria del silex',
+        eyebrow: 'Segunda pista',
+        body:
+          'La Sima del Silex conserva restos de talla laminar: pequenas marcas tecnicas que prueban presencia humana sostenida.',
+      },
+      {
+        id: 'agricultura',
+        title: 'Del movimiento al asentamiento',
+        eyebrow: 'Tercera pista',
+        body:
+          'Con el Neolitico llegan ceramicas, piedra pulimentada, agricultura y pastoreo: el territorio empieza a vivirse de otra manera.',
+      },
+    ],
+    challenge: {
+      prompt: 'Ordena la transformacion del territorio',
+      helper: 'Toca las tres pistas en el orden historico correcto.',
+      options: [
+        { id: 'agricultura', label: 'Agricultura y pastoreo' },
+        { id: 'cazadores', label: 'Cazadores-recolectores' },
+        { id: 'silex', label: 'Industria litica en silex' },
+      ],
+      answer: ['cazadores', 'silex', 'agricultura'],
+      successText:
+        'Has reconstruido el primer cambio de la aventura: del territorio recorrido al territorio habitado.',
+    },
+    touristTip: {
+      headline: 'Si estas en Teba',
+      items: [
+        'Pregunta por el Museo Historico Municipal para contextualizar las piezas arqueologicas.',
+        'Relaciona la prehistoria con el paisaje: sierras, valle y agua explican la presencia humana.',
+        'Usa esta etapa como inicio de ruta antes de subir al Castillo de la Estrella.',
+      ],
+      localAdvice:
+        'La clave para visitantes y vecinos es mirar Teba por capas: primero territorio, despues pueblo.',
+    },
+    rewardTitle: 'Sello: Primeros pasos del Guadalteba',
     missionTitle: 'Rastrear los primeros pasos',
     missionDescription: 'Registra las tres pistas que explican la presencia humana mas antigua.',
     archiveEntryIds: ['cueva-palomas', 'sima-silex', 'llano-espa'],
@@ -314,8 +402,30 @@ export function completeHistorianStage(progress: RpgProgress, stageId: string): 
   };
 }
 
+export function acknowledgeHistorianArchive(progress: RpgProgress): RpgProgress {
+  return {
+    ...progress,
+    historianCampaign: {
+      ...progress.historianCampaign,
+      archiveIntroduced: true,
+      archiveEntryIds: unique(progress.historianCampaign.archiveEntryIds, 'archivo-teba'),
+    },
+    updatedAt: Date.now(),
+  };
+}
+
 export function getHistorianCampaignPercent(progress: RpgProgress): number {
   return Math.round(
     (progress.historianCampaign.completedStageIds.length / historianStages.length) * 100
   );
+}
+
+export function isHistorianChallengeCorrect(stageId: string, selectedOptionIds: string[]): boolean {
+  const stage = getHistorianStage(stageId);
+
+  if (!stage?.challenge || selectedOptionIds.length !== stage.challenge.answer.length) {
+    return false;
+  }
+
+  return stage.challenge.answer.every((optionId, index) => selectedOptionIds[index] === optionId);
 }

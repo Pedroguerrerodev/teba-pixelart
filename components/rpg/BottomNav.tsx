@@ -12,7 +12,7 @@ export default function BottomNav({ current, onNavigate }: BottomNavProps) {
   const items = [
     { screen: 'map' as const, label: 'Mapa', icon: Map },
     { screen: 'quests' as const, label: 'Misiones', icon: ScrollText },
-    { screen: 'collection' as const, label: 'Diario', icon: Gem },
+    { screen: 'collection' as const, label: 'Codice', icon: Gem },
     { screen: 'guide' as const, label: 'Guia', icon: Compass },
   ];
 

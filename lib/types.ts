@@ -96,6 +96,7 @@ export interface RpgProgress {
   solvedPuzzleIds: string[];
   collectionItemIds: string[];
   historianCampaign: {
+    archiveIntroduced: boolean;
     visitedStageIds: string[];
     completedStageIds: string[];
     archiveEntryIds: string[];

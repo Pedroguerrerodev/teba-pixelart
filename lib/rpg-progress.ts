@@ -16,6 +16,7 @@ export function createDefaultRpgProgress(): RpgProgress {
     solvedPuzzleIds: [],
     collectionItemIds: [],
     historianCampaign: {
+      archiveIntroduced: false,
       visitedStageIds: [],
       completedStageIds: [],
       archiveEntryIds: [],
@@ -122,9 +123,16 @@ export function loadRpgProgress(): RpgProgress {
       return createDefaultRpgProgress();
     }
 
+    const defaults = createDefaultRpgProgress();
+    const parsed = JSON.parse(stored) as Partial<RpgProgress>;
+
     return {
-      ...createDefaultRpgProgress(),
-      ...JSON.parse(stored),
+      ...defaults,
+      ...parsed,
+      historianCampaign: {
+        ...defaults.historianCampaign,
+        ...parsed.historianCampaign,
+      },
     };
   } catch {
     return createDefaultRpgProgress();
